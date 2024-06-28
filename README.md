@@ -37,3 +37,4 @@ MyRecipes is a web application built using Flask, Python, and MySQL, leveraging 
 - Bootstrap
 - Javascript
 - cdnjs for icons
+- Panda 
