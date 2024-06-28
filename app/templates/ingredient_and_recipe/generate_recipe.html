@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search_style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+    <title>Myrecipes</title>
+</head>
+<body>
+    <div class="container">
+        <div class="fixed-search-bar-background">
+            <div class="container fixed-search-bar-content" id="fixed-nav">
+                <div class="row d-flex justify-content-evenly align-items-center my-4">
+                    <a href="/" class="col-3 d-flex align-items-center text-decoration-none">
+                        <h3 class="mb-0">myrecipes</h3>
+                        <img src="/static/images/myrecipes_logo.png" alt="myrecipes_logo" width="35px">
+                    </a>
+                    <form action="/generate/recipe" method="POST" class="col-6">
+                        <div class="d-flex justify-content-between mx-auto my-auto search-box">
+                            <div class="input-group form-container">
+                                <input type="text" name="ingredients" id="ingredients" class="form-control search-input" placeholder="Find recipes by your ingredients" autofocus="autofocus" autocomplete="off">
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-search rounded-end">
+                                        <img src="/static/images/search.png" alt="search-icon" width="17px" class="search-icon">
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="dropdown" id="categories">
+                                <a class="btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Select Category
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-value="breakfast">Breakfast</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="lunch">Lunch</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="dinner">Dinner</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="vegan">Vegan</a></li>
+                                </ul>
+                                <input type="hidden" name="category" id="category">
+                            </div>
+                        </div>
+                    </form>  
+                    <div class="col-3 d-flex justify-content-end" id="nav-links">
+                        <a href="/user/all/recipes" class="me-3 nav-link active" aria-current="page">My Recipes</a>
+                        <a href="/user/login" class="me-3 nav-link">Login</a>
+                        <a href="/user/logout" class="nav-link">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="carouselExampleInterval" class="row carousel slide full-width-carousel" data-bs-ride="carousel">
+            <div class="carousel-inner p-0">
+              <div class="carousel-item active" data-bs-interval="5000">
+                <img src="/static/images/latte_art.jpg" class="d-block w-100" alt="beef_steak">
+              </div>
+              <div class="carousel-item" data-bs-interval="5000">
+                <img src="/static/images/pizza.jpg" class="d-block w-100" alt="pizza">
+              </div>
+              <div class="carousel-item">
+                <img src="/static/images/healthy_foods.jpg" class="d-block w-100" alt="healthy_foods">
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        <h2 class="my-4">WHAT OTHER PEOPLE ARE CRAVING</h2>
+        <div class="row row-cols-md-3 g-3 mt-3">
+            {% if user_recipes %}
+                {% for user_id, user_data in user_recipes.items() %}
+                    {% for recipe in user_data.recipes %}
+                        <div class="col">
+                            <div class="card">
+                                {% if recipe.image_url %}
+                                    <a href="/user/recipe/{{recipe['id']}}">
+                                        <img src="{{ recipe.image_url }}" class="card-img-top mx-auto my-auto" alt="{{ recipe.name }}">
+                                    </a>
+                                {% else %}
+                                    <a href="/user/recipe/{{recipe['id']}}">
+                                        <div class="no-image">No image available</div>
+                                    </a>
+                                    {% endif %}
+                                <div class="card-body" >
+                                    <div id="nav-links">
+                                        <a href="/user/recipe/{{recipe['id']}}" >
+                                            <h4 class="card-title">{{ recipe.name }}</h4>
+                                        </a>
+                                    </div>
+                                    
+                                    <p class="card-text"><strong>Favoured By: </strong>{{ recipe.num_likes }}</p>
+                                    <p class="card-text">
+                                        <a class="icon-link icon-link-hover" href="/user/recipes/{{ user_id }}">
+                                            <strong>Recipes By: </strong>{{ user_data.user_first_name }} {{ user_data.user_last_name }}
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat-left-heart-fill" viewBox="0 0 16 16">
+                                                <path d="M2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6 3.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132"/>
+                                              </svg>
+                                          </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p>No recipes found.</p>
+            {% endif %}
+        </div>
+    </div>
+    <footer class="text-dark pt-5 pb-4 mt-5">
+        <div class="container text-center text-md-left">
+            <div class="row text-center text-md-left">
+                <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 font-weight-bold">Company Name</h5>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque quas eius non officiis qui, expedita quisquam, ipsam asperiores quis a eveniet libero similique provident quos enim voluptatum ullam et molestiae.</p>
+                </div>
+                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 font-weight-bold">Products</h5>
+                    <p>
+                        <a href="#" class="text-dark" style="text-decoration: none;">Ingredients</a>
+                    </p>
+                    <p>
+                        <a href="#" class="text-dark" style="text-decoration: none;">Dinner</a>
+                    </p>
+                    <p>
+                        <a href="#" class="text-dark" style="text-decoration: none;">Meals</a>
+                    </p>
+                    <p>
+                        <a href="#" class="text-dark" style="text-decoration: none;">Kitchen Tips</a>
+                    </p>
+                </div>
+                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 font-weight-bold">Products</h5>
+                    <p>
+                        <a href="#" class="text-dark" style="text-decoration: none;">Ingredients</a>
+                    </p>
+                    <p>
+                        <a href="#" class="text-dark" style="text-decoration: none;">Dinner</a>
+                    </p>
+                    <p>
+                        <a href="#" class="text-dark" style="text-decoration: none;">Meals</a>
+                    </p>
+                    <p>
+                        <a href="#" class="text-dark" style="text-decoration: none;">Kitchen Tips</a>
+                    </p>
+                </div>
+                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 font-weight-bold">Contact</h5>
+                    <p>
+                        <i class="fas fa-home mr-3"></i> Address
+                    </p>
+                    <p>
+                        <i class="fas fa-envelope mr-3"></i> Email Address
+                    </p>
+                    <p>
+                        <i class="fas fa-phone mr-3"></i> Phone number
+                    </p>
+                    <p>
+                        <i class="fas fa-print mr-3"></i> Fax
+                    </p>
+                </div>
+            </div>
+            <hr class="mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-7 col-lg-8">
+                    <p>Copyright @2024 All rights reserved by:
+                        <a href="#" style="text-decoration: none;">
+                            <strong class="text-warning">The Developer</strong>
+                        </a>
+                    </p>
+                </div>
+                <div class="col-md-5 col-lg-4">
+                    <div class="text-center text-md-right">
+                        <ul class="list-unstyled list-inline">
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-dark" style="font-size: 23px;"><i class="fab fa-facebook"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-dark" style="font-size: 23px;"><i class="fab fa-twitter"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-dark" style="font-size: 23px;"><i class="fab fa-instagram"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-dark" style="font-size: 23px;"><i class="fab fa-linkedin-in"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-dark" style="font-size: 23px;"><i class="fab fa-google-plus"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-dark" style="font-size: 23px;"><i class="fab fa-youtube"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
+</body>
+</html>
